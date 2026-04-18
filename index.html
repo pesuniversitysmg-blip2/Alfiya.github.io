@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Alfiya | Eternal Love Story</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none; /* subtle cinematic feel, avoid accidental selection */
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Playfair Display', serif;
+      background: #0a0a0a;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    /* CINEMATIC SCROLL LOCK & GLOBAL */
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* PAGE CONTAINER */
+    .page {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+      opacity: 1;
+    }
+
+    .page.fade-out {
+      opacity: 0;
+    }
+
+    /* DARK OVERLAY + VIGNETTE */
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.75) 100%);
+      backdrop-filter: blur(2px);
+      z-index: 1;
+    }
+
+    /* GLASS CARD */
+    .glass-card {
+      position: relative;
+      z-index: 10;
+      max-width: 85%;
+      width: 620px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(16px);
+      border-radius: 2rem;
+      padding: 2rem 2.2rem;
+      border: 1px solid rgba(255, 105, 180, 0.4);
+      box-shadow: 0 25px 45px rgba(0,0,0,0.4), 0 0 20px rgba(255, 20, 147, 0.2);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    /* TYPOGRAPHY */
+    .romantic-headline {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #ffe6f0, #ff99cc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 8px rgba(255, 20, 147, 0.3);
+    }
+
+    .poem-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      font-weight: 400;
+      color: #f5e6f0;
+      text-shadow: 0 1px 2px black;
+      margin: 1.5rem 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .typing-target {
+      min-height: 160px;
+    }
+
+    /* NAV BUTTONS */
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: rgba(20, 20, 40, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 105, 180, 0.6);
+      padding: 0.7rem 1.6rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      color: #ffc0e0;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 1rem;
+    }
+
+    .nav-btn:hover {
+      background: #ff69b4;
+      color: #0a0a0a;
+      border-color: #fff0f5;
+      box-shadow: 0 0 12px #ff69b4;
+    }
+
+    /* ENTRY PAGE SPECIAL */
+    .entry-btn {
+      background: linear-gradient(45deg, #ff69b4, #ff1493);
+      border: none;
+      padding: 1rem 2.5rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: white;
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255,105,180,0.6);
+      transition: 0.2s;
+      margin-top: 2rem;
+    }
+
+    .entry-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 32px #ff69b4;
+    }
+
+    /* MUSIC BAR */
+    .music-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 50px;
+      padding: 8px 15px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      border: 1px solid #ff69b4;
+      font-size: 0.9rem;
+    }
+
+    .music-controls button {
+      background: transparent;
+      border: none;
+      color: #ffc0cb;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .volume-slider {
+      width: 80px;
+      cursor: pointer;
+      accent-color: #ff69b4;
+    }
+
+    /* floating hearts canvas */
+    #hearts-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    /* Ken Burns zoom */
+    .zoom-bg {
+      animation: kenBurnsZoom 12s ease-out forwards;
+    }
+
+    @keyframes kenBurnsZoom {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+
+    /* responsive */
+    @media (max-width: 640px) {
+      .glass-card {
+        padding: 1.5rem;
+        width: 90%;
+      }
+      .romantic-headline {
+        font-size: 1.6rem;
+      }
+      .poem-text {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+<canvas id="hearts-canvas" width="400" height="400" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999;"></canvas>
+
+<script>
+  // ---------- MEMORY DATABASE (16 Images + text) ----------
+  const memories = [
+    { img: "Images/Img1.jpeg", headline: "Pehli baarish ki tarah", para: "Jab pehli baar teri muskaan dekhi, lagta tha jaise chaand nikal aaya ho. Teri aankhon mein woh nishchalapan, har dard mita de. Tu mere jeene ki wajah hai, Alfiya." },
+    { img: "Images/Img2.jpeg", headline: "Tere khayal ki khushbu", para: "Har subah teri yaad se hoti hai roshan. Teri hansi jaise ghanti ki goonj, meri rooh ko sukoon deti hai. Tere bina ye dil adhoora, tu hai toh duniya rangeen." },
+    { img: "Images/Img3.jpeg", headline: "Tu meri kahani", para: "Teri har adaa, jaise koi khwab. Tere chehre ki roshni se andheron mein bhi raah milti hai. Main tujh mein apna aaina dekhta hoon, aur khud ko behtar paata hoon." },
+    { img: "Images/Img4.jpeg", headline: "Jaise phool pe shabnam", para: "Tera chehra narm, teri baatein geeli si. Tu wo subah hai jo raat ke baad aati hai, ummeed lekar. Main har lafz tujhe likhna chahta hoon." },
+    { img: "Images/Img5.jpeg", headline: "Chaand bhi sharmaye", para: "Alfiya teri khubsurati be-misaal. Jaise taare raat mein damaktein, waise hi tu har pal damakti hai. Tujhe dekhna hi mera junoon hai." },
+    { img: "Images/Img6.jpeg", headline: "Tere bina veeran", para: "Meri rooh tujhe pukaare. Tu jo paas ho toh waqt tham jaaye. Tere ishq mein main khud ko bhola baitha hoon, aur yeh bhool acchi lagti hai." },
+    { img: "Images/Img7.jpeg", headline: "Teri aankhon ka samandar", para: "Gehra, beintehaa, sukoon bhara. Jab tu dekhe toh lagta hai jaise sari khushiyan mil gayi. Tu meri manzil aur safar dono hai." },
+    { img: "Images/Img8.jpeg", headline: "Dhadkano ki zubaan", para: "Meri har dhadkan tujhe hi puche. Tu paas ho toh duniya chhoti lagti hai. Teri baatein mere liye geeton se kam nahi." },
+    { img: "Images/Img9.jpeg", headline: "Pyaar ka ehsaas", para: "Tujhe choo ke mahsoos hota hai, jaise barish ki boondein. Tu wo meethi chubhan, jo har pal sukoon deti hai. Alfiya, tu meri dua ka nateeja hai." },
+    { img: "Images/Img10.jpeg", headline: "Tere liye har ghadi", para: "Main roz naya hoon tere pyaar mein. Teri muskurahat se har gam mit jaata hai. Tu meri kahani ka sabse haseen moad hai." },
+    { img: "Images/Img11.jpeg", headline: "Rang tera", para: "Tere ishq mein rang chadha hai aisa ke duniya bhool gaya. Teri har ik adaa mein main khud ko dhundhta hoon, tu hi tu." },
+    { img: "Images/Img12.jpeg", headline: "Saath tera", para: "Tu mera saaya, mera humraaz. Tere bina adhoorapan, tere sang har khwab mukammal. Tu jannat ka woh zaroori hissa." },
+    { img: "Images/Img13.jpeg", headline: "Mohabbat ka roop", para: "Alfiya tu mohabbat ki murti. Tere bina duniya sooni, tere sang sab kuch. Main tujh mein apni saanso ko mehsoos karta hoon." },
+    { img: "Images/Img14.jpeg", headline: "Meri har dua", para: "Tere liye likhi har dua kabool ho. Tu mera sukoon aur mera junoon. Dil ki gehraiyon se tujhe chahta hoon." },
+    { img: "Images/Img15.jpeg", headline: "Beintehaa ishq", para: "Tujhe dekh ke lagta hai, main zindagi jeeta hoon. Teri baahon mein sukoon, teri yaadon mein khushi. Tu meri duniya ka noor." },
+    { img: "Images/Img16.jpeg", headline: "Tum hi ho", para: "Tu hi wajah, tu hi manzil. Alfiya teri yaad se mera dil roshan. Sirf tu, bas tu. Main har janam tujhe chahunga." }
+  ];
+
+  // VIDEO PAGES (video1...video5)
+  const videoSlots = [
+    { video: "Images/vid1.mp4", caption: "Tu jab paas hoti hai, lagta hai jannat yahin hai. ❤️" },
+    { video: "Images/vid2.mp4", caption: "Teri awaaz me sukoon, teri baaton me pyaar. ✨" },
+    { video: "Images/vid3.mp4", caption: "Har pal teri tasveer, jaise sapna meetha. 💫" },
+    { video: "Images/vid4.mp4", caption: "Teri muskaan ki koi keemat nahi, meri duniya tu. 🌹" },
+    { video: "Images/vid5.mp4", caption: "Tu hi meri subah, tu hi shaam. Hamesha. 💖" }
+  ];
+
+  // total pages = 16 memories + 5 video + 1 love letter = 22 pages.
+  const totalPages = 16 + 5 + 1; // index 0..21
+  let currentPageIndex = 0;      // will be managed after entry
+  let pageStack = [];             // store page types
+  let audio = null;
+  let musicStarted = false;
+  let globalUnlock = false;       // entered story
+
+  // Helper build page data
+  function buildPageList() {
+    let pages = [];
+    // memories 1-16
+    for (let i=0; i<16; i++) pages.push({ type: 'memory', index: i, data: memories[i] });
+    // videos 1-5
+    for (let i=0; i<5; i++) pages.push({ type: 'video', index: i, data: videoSlots[i] });
+    // love letter final
+    pages.push({ type: 'letter' });
+    return pages;
+  }
+
+  let pageDefinitions = buildPageList();
+
+  // floating hearts effect
+  class HeartAnimation {
+    constructor(canvas) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+      this.hearts = [];
+      this.resize();
+      window.addEventListener('resize', () => this.resize());
+      this.animate();
+      setInterval(() => this.spawnHeart(), 800);
+    }
+    resize() {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
+    spawnHeart() {
+      if (!globalUnlock) return;
+      const x = Math.random() * this.canvas.width;
+      const size = 12 + Math.random() * 18;
+      this.hearts.push({
+        x, y: this.canvas.height,
+        size, alpha: 0.8,
+        vy: -1.2 - Math.random() * 1.5,
+        vx: (Math.random() - 0.5) * 0.8,
+        life: 1
+      });
+      if (this.hearts.length > 80) this.hearts.shift();
+    }
+    animate() {
+      if (!this.ctx) return;
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      for (let i=0; i<this.hearts.length; i++) {
+        let h = this.hearts[i];
+        h.x += h.vx;
+        h.y += h.vy;
+        h.life -= 0.008;
+        if (h.y + h.size < 0 || h.life <= 0) {
+          this.hearts.splice(i,1);
+          i--;
+          continue;
+        }
+        this.ctx.globalAlpha = h.life * 0.7;
+        this.ctx.fillStyle = `#ff4d8c`;
+        this.ctx.shadowBlur = 10;
+        this.ctx.shadowColor = "#ff69b4";
+        this.drawHeart(h.x, h.y, h.size);
+      }
+      this.ctx.globalAlpha = 1;
+      requestAnimationFrame(() => this.animate());
+    }
+    drawHeart(x, y, size) {
+      this.ctx.beginPath();
+      const topCurveHeight = size * 0.3;
+      this.ctx.moveTo(x, y + topCurveHeight);
+      this.ctx.bezierCurveTo(x, y, x - size/2, y, x - size/2, y + topCurveHeight);
+      this.ctx.bezierCurveTo(x - size/2, y + (size*0.6), x, y + size, x, y + size);
+      this.ctx.bezierCurveTo(x, y + size, x + size/2, y + (size*0.6), x + size/2, y + topCurveHeight);
+      this.ctx.bezierCurveTo(x + size/2, y, x, y, x, y + topCurveHeight);
+      this.ctx.fill();
+    }
+  }
+
+  const canvasElem = document.getElementById('hearts-canvas');
+  new HeartAnimation(canvasElem);
+
+  // persistent music setup
+  function initAudio() {
+    if (audio) return;
+    audio = new Audio('Images/Music/Song1.mpeg');
+    audio.loop = true;
+    audio.volume = 0.4;
+    audio.preload = 'auto';
+    document.body.appendChild(audio);
+    // autoplay policy will be after user click
+  }
+
+  function startMusic() {
+    if (audio && !musicStarted) {
+      audio.play().catch(e => console.log("autoplay blocked, but interaction already done"));
+      musicStarted = true;
+    }
+  }
+
+  // rendering engine (single page app style)
+  const appDiv = document.getElementById('app');
+
+  // helper for typing effect
+  function typeWriter(element, text, speed = 30, callback) {
+    element.innerHTML = '';
+    let i = 0;
+    function typing() {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typing, speed);
+      } else if (callback) callback();
+    }
+    typing();
+  }
+
+  let currentTypingActive = false;
+
+  function renderPage(pageIdx, transitionDirection = 'next') {
+    if (!globalUnlock && pageIdx !== -1) return;
+    if (pageIdx < 0 || pageIdx >= totalPages) return;
+    currentPageIndex = pageIdx;
+    const pageDef = pageDefinitions[pageIdx];
+    if (!pageDef) return;
+
+    // fade transition effect
+    appDiv.style.opacity = '0';
+    setTimeout(() => {
+      buildDOM(pageDef, pageIdx);
+      appDiv.style.opacity = '1';
+      // restart ken burns for bg image if memory
+      if (pageDef.type === 'memory') {
+        const bgDiv = document.querySelector('.page');
+        if (bgDiv) {
+          bgDiv.style.animation = 'none';
+          bgDiv.offsetHeight;
+          bgDiv.style.animation = 'kenBurnsZoom 12s ease-out forwards';
+        }
+      }
+      // auto typing effect for text
+      if (pageDef.type === 'memory') {
+        const paraDiv = document.getElementById('dynamic-poem');
+        if (paraDiv) {
+          typeWriter(paraDiv, pageDef.data.para, 28, null);
+        }
+      } else if (pageDef.type === 'letter') {
+        const letterDiv = document.getElementById('letterContent');
+        if (letterDiv) {
+          const longLetter = `Dear Alfiya,<br><br>Shayad main kabhi perfect words na dhoond paun... Par ek baat zaroor kehna chahta hoon. Tu meri zindagi ka woh hissa hai jise main kabhi khona nahi chahta. Har din, har pal... bas tu hi khayalon mein rehti hai. Tere bina main adhoora, jaise chaand bina taaro ke. Teri muskaan meri subah, teri hansi meri shaam. Tu wo khwab hai jo main roz dekhna chahta hoon. Agar mohabbat ek ehsaas hai... toh tu uska sabse khoobsurat roop hai. Tujhse milkar maine jeena seekha. Hamesha tera rahunga, chahe dooriyan kyun na ho. Tu meri rooh ka sukoon hai.<br><br>Hamesha tumhara,<br>— Muraad ❤️`;
+          letterDiv.innerHTML = longLetter;
+          // floating heavy hearts activated by css?
+        }
+      } else if (pageDef.type === 'video') {
+        const videoData = pageDef.data;
+        const videoElem = document.getElementById('story-video');
+        if (videoElem) {
+          videoElem.src = videoData.video;
+          videoElem.load();
+          videoElem.play().catch(e=>console.log);
+          const capDiv = document.getElementById('video-caption');
+          if (capDiv) {
+            capDiv.innerHTML = '';
+            typeWriter(capDiv, videoData.caption, 50);
+          }
+        }
+      }
+    }, 200);
+  }
+
+  function buildDOM(pageDef, idx) {
+    const isMemory = pageDef.type === 'memory';
+    const isVideo = pageDef.type === 'video';
+    const isLetter = pageDef.type === 'letter';
+
+    if (isMemory) {
+      const mem = pageDef.data;
+      appDiv.innerHTML = `
+        <div class="page" style="background-image: url('${mem.img}'); background-size: cover; background-position: center center;">
+          <div class="overlay"></div>
+          <div class="glass-card">
+            <h2 class="romantic-headline">${mem.headline}</h2>
+            <div class="poem-text typing-target" id="dynamic-poem"></div>
+            <div class="nav-buttons">
+              <button class="nav-btn" id="prevBtn">← Previous</button>
+              <button class="nav-btn" id="nextBtn">Next →</button>
+            </div>
+          </div>
+        </div>
+      `;
+    } 
+    else if (isVideo) {
+      const vid = pageDef.data;
+      appDiv.innerHTML = `
+        <div class="page" style="background: #000;">
+          <video id="story-video" autoplay muted loop playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;"></video>
+          <div class="overlay" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(3px);"></div>
+          <div class="glass-card" style="background: rgba(0,0,0,0.7);">
+            <div class="poem-text" id="video-caption" style="font-size:1.4rem; font-weight:500;"></div>
+            <div class="nav-buttons">
+              <button class="nav-btn" id="prevBtn">← Previous</button>
+              <button class="nav-btn" id="nextBtn">Next →</button>
+            </div>
+          </div>
+        </div>
+      `;
+    } 
+    else if (isLetter) {
+      appDiv.innerHTML = `
+        <div class="page" style="background: radial-gradient(circle at 30% 10%, #1a0b12, #000000);">
+          <div class="overlay" style="background: rgba(0,0,0,0.4);"></div>
+          <div class="glass-card" style="max-width: 700px; animation: glowPulse 2s infinite;">
+            <h2 class="romantic-headline" style="font-size: 2.3rem;">✧ My Eternal Vow ✧</h2>
+            <div id="letterContent" class="poem-text" style="text-align: left; font-size:1.1rem;"></div>
+            <div class="nav-buttons">
+              <button class="nav-btn" id="prevBtn">← Back to Memories</button>
+              <button class="nav-btn" id="restartBtn">⟳ Relive Journey</button>
+            </div>
+          </div>
+        </div>
+        <style>
+          @keyframes glowPulse {
+            0% { box-shadow: 0 0 10px #ff69b4; border-color: #ff69b4;}
+            100% { box-shadow: 0 0 30px #ff1493; border-color: #ffb6c1;}
+          }
+        </style>
+      `;
+    }
+
+    // attach events after dom ready
+    setTimeout(() => {
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      if (prevBtn) prevBtn.addEventListener('click', () => { if(globalUnlock) navigatePrev(); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { if(globalUnlock) navigateNext(); });
+      const restartBtn = document.getElementById('restartBtn');
+      if (restartBtn) restartBtn.addEventListener('click', () => { if(globalUnlock) { currentPageIndex = 0; renderPage(0); } });
+    }, 10);
+  }
+
+  function navigateNext() {
+    if (currentPageIndex + 1 < totalPages) {
+      renderPage(currentPageIndex + 1);
+    } else {
+      // loop to first? but we stay, but can restart? optional but fine
+      if(currentPageIndex === totalPages-1) {
+        // show subtle alert but no
+        renderPage(0);
+      }
+    }
+  }
+  function navigatePrev() {
+    if (currentPageIndex - 1 >= 0) {
+      renderPage(currentPageIndex - 1);
+    }
+  }
+
+  // entry page
+  function showEntry() {
+    globalUnlock = false;
+    appDiv.innerHTML = `
+      <div class="page" style="background: radial-gradient(ellipse at center, #1e0c18, #000000);">
+        <div class="overlay" style="backdrop-filter: blur(3px);"></div>
+        <div class="glass-card" style="text-align: center;">
+          <h1 style="font-size: 2.5rem; letter-spacing: 2px;">💌 Alfiya 💌</h1>
+          <div class="poem-text" style="font-size: 1.4rem; margin: 1rem 0;">“This is not just a website… it’s my heart ❤️”</div>
+          <button class="entry-btn" id="enterStoryBtn">Enter My Love Story</button>
+        </div>
+      </div>
+    `;
+    const enterBtn = document.getElementById('enterStoryBtn');
+    if (enterBtn) {
+      enterBtn.addEventListener('click', () => {
+        globalUnlock = true;
+        startMusic();
+        renderPage(0);
+      });
+    }
+  }
+
+  // setup music UI globally persistent
+  function addMusicWidget() {
+    const widget = document.createElement('div');
+    widget.className = 'music-controls';
+    widget.innerHTML = `
+      <button id="playPauseMusic">⏸️</button>
+      <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.01" value="0.4">
+      <span style="font-size:12px;">🎵</span>
+    `;
+    document.body.appendChild(widget);
+    const playPause = document.getElementById('playPauseMusic');
+    const volumeCtrl = document.getElementById('volumeControl');
+    if (playPause) {
+      playPause.addEventListener('click', () => {
+        if (!audio) initAudio();
+        if (audio.paused) { audio.play(); playPause.innerText = '⏸️'; }
+        else { audio.pause(); playPause.innerText = '▶️'; }
+      });
+    }
+    if (volumeCtrl && audio) {
+      volumeCtrl.addEventListener('input', (e) => { if(audio) audio.volume = parseFloat(e.target.value); });
+    }
+    setInterval(() => {
+      if (audio && !audio.paused && playPause) playPause.innerText = '⏸️';
+      else if (audio && audio.paused && playPause) playPause.innerText = '▶️';
+    }, 500);
+  }
+
+  function init() {
+    initAudio();
+    addMusicWidget();
+    showEntry();
+    // set global style transitions
+    const style = document.createElement('style');
+    style.textContent = `
+      .page { transition: opacity 0.6s ease; }
+      #app { transition: opacity 0.5s; }
+      button, .nav-btn { cursor: pointer; }
+    `;
+    document.head.appendChild(style);
+  }
+  init();
+</script>
+</body>
+</html>
